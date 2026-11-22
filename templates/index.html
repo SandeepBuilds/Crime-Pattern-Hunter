@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Crime Pattern Hunter</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+<a href="#home" class="logo">
+<span class="logo-icon">CP</span>
+CRIME PATTERN <b>HUNTER</b>
+</a>
+
+<nav>
+<a href="#overview">Overview</a>
+<a href="#explorer">Data Explorer</a>
+<a href="#geography">Geography</a>
+<a href="#time">Time Analysis</a>
+<a href="#patterns">ML Patterns</a>
+<a href="#findings">Findings</a>
+<a href="#about">About</a>
+</nav>
+
+<a href="#overview" class="nav-button">Explore ↗</a>
+
+</header>
+
+
+<!-- HOME -->
+
+<section class="hero" id="home">
+
+<div class="hero-content">
+
+<div class="eyebrow">
+<span class="pulse"></span>
+INDIA CRIME DATA ANALYSIS
+</div>
+
+<h1>
+EVERY CRIME<br>
+LEAVES A <span>PATTERN.</span>
+</h1>
+
+<p>
+Explore historical crime records across Indian cities.
+Discover hidden trends, analyse crime distributions
+and understand patterns using machine learning.
+</p>
+
+<div class="hero-buttons">
+
+<a href="#overview" class="primary-btn">
+Begin Investigation ↘
+</a>
+
+<a href="#about" class="secondary-btn">
+About Project →
+</a>
+
+</div>
+
+<div class="hero-bottom">
+<span>● HISTORICAL DATA ANALYSIS</span>
+<span>DATA-DRIVEN INVESTIGATION</span>
+</div>
+
+</div>
+
+<div class="hero-visual">
+
+<div class="radar">
+<div class="radar-ring"></div>
+<div class="radar-ring"></div>
+<div class="radar-ring"></div>
+<div class="radar-sweep"></div>
+<div class="radar-center"></div>
+</div>
+
+<div class="hero-note">
+<div>INVESTIGATION LOG / 001</div>
+<p>
+Patterns are not always visible.
+Data helps bring them into focus.
+</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- INTRO -->
+
+<section class="intro-strip">
+
+<div>
+<span>THE MISSION</span>
+<h2>Turn raw crime records into understandable insights.</h2>
+</div>
+
+<p>
+Understand what happened, where it was recorded,
+when it occurred and which recurring patterns
+appear in the dataset.
+</p>
+
+</section>
+
+
+<!-- OVERVIEW -->
+
+<section class="section" id="overview">
+
+<div class="section-heading">
+
+<div class="eyebrow">01 / DATA OVERVIEW</div>
+
+<h2>The investigation <span>at a glance.</span></h2>
+
+<p>Explore the dataset using interactive filters.</p>
+
+</div>
+
+
+<div class="filters">
+
+<label>
+LOCATION
+
+<select id="cityFilter">
+<option value="All">All Cities</option>
+</select>
+
+</label>
+
+<label>
+CRIME CATEGORY
+
+<select id="crimeFilter">
+<option value="All">All Categories</option>
+</select>
+
+</label>
+
+<label>
+YEAR
+
+<select id="yearFilter">
+<option value="All">All Years</option>
+</select>
+
+</label>
+
+<button id="resetFilters">↺ Reset</button>
+
+</div>
+
+
+<div class="stats-grid">
+
+<div class="stat-card">
+<span>TOTAL RECORDS</span>
+<h2 id="statTotal">—</h2>
+<p>Recorded incidents</p>
+</div>
+
+<div class="stat-card">
+<span>CITIES COVERED</span>
+<h2 id="statCities">—</h2>
+<p>Locations represented</p>
+</div>
+
+<div class="stat-card">
+<span>CRIME CATEGORIES</span>
+<h2 id="statCategories">—</h2>
+<p>Distinct categories</p>
+</div>
+
+<div class="stat-card">
+<span>CASES CLOSED</span>
+<h2 id="statClosed">—</h2>
+<p id="closedSub">Based on case status</p>
+</div>
+
+</div>
+
+
+<div class="charts-grid">
+
+<div class="panel">
+
+<div class="panel-heading">
+<div>
+<span>01 / CATEGORY ANALYSIS</span>
+<h3>Most recorded crime types</h3>
+</div>
+</div>
+
+<div class="chart-box">
+<canvas id="crimeChart"></canvas>
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="panel-heading">
+<div>
+<span>02 / CITY ANALYSIS</span>
+<h3>Crime records by city</h3>
+</div>
+</div>
+
+<div class="chart-box">
+<canvas id="cityChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+<p class="note">
+All counts represent records in the supplied dataset.
+They are not population-adjusted crime rates.
+</p>
+
+</section>
+
+
+<!-- EXPLORER -->
+
+<section class="section dark-section" id="explorer">
+
+<div class="section-heading">
+
+<div class="eyebrow">02 / RECORD EXPLORER</div>
+
+<h2>Look closer. <span>Question the data.</span></h2>
+
+<p>Search and inspect individual crime records.</p>
+
+</div>
+
+
+<div class="panel">
+
+<div class="table-heading">
+
+<div>
+<span>DATASET BROWSER</span>
+<h3>Crime record register</h3>
+</div>
+
+<input
+type="search"
+id="recordSearch"
+placeholder="Search city, crime, weapon..."
+>
+
+</div>
+
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+<th>REPORT ID</th>
+<th>OCCURRENCE</th>
+<th>CITY</th>
+<th>CRIME TYPE</th>
+<th>DOMAIN</th>
+<th>AGE</th>
+<th>WEAPON</th>
+<th>STATUS</th>
+</tr>
+</thead>
+
+<tbody id="recordsBody">
+<tr><td colspan="8">Loading records...</td></tr>
+</tbody>
+
+</table>
+
+</div>
+
+
+<div class="table-footer">
+
+<span id="recordCount">Loading...</span>
+
+<div>
+<button id="prevPage">←</button>
+<span id="pageLabel">1 / 1</span>
+<button id="nextPage">→</button>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- GEOGRAPHY -->
+
+<section class="section" id="geography">
+
+<div class="section-heading">
+
+<div class="eyebrow">03 / GEOGRAPHICAL ANALYSIS</div>
+
+<h2>Where are records <span>concentrated?</span></h2>
+
+<p>Explore city-level crime record distribution.</p>
+
+</div>
+
+
+<div class="map-layout">
+
+<div class="panel">
+
+<div class="panel-heading">
+<h3>India Crime Distribution</h3>
+</div>
+
+<div id="crimeMap"></div>
+
+<p class="note">
+Map markers represent city-level record counts.
+They do not indicate street-level hotspots.
+</p>
+
+</div>
+
+
+<div class="panel ranking-panel">
+
+<span>LOCATION RANKING</span>
+
+<h3>Top cities</h3>
+
+<div id="cityRanking"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- TIME ANALYSIS -->
+
+<section class="section dark-section" id="time">
+
+<div class="section-heading">
+
+<div class="eyebrow">04 / TEMPORAL ANALYSIS</div>
+
+<h2>When do records <span>occur?</span></h2>
+
+<p>Discover trends across years, months and hours.</p>
+
+</div>
+
+
+<div class="charts-grid">
+
+<div class="panel">
+
+<div class="panel-heading">
+<h3>Yearly Crime Trends</h3>
+</div>
+
+<div class="chart-box">
+<canvas id="yearChart"></canvas>
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="panel-heading">
+<h3>Crime by Hour</h3>
+</div>
+
+<div class="chart-box">
+<canvas id="hourChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="panel month-panel">
+
+<div class="panel-heading">
+<h3>Monthly Crime Distribution</h3>
+</div>
+
+<div class="chart-box">
+<canvas id="monthChart"></canvas>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- MACHINE LEARNING -->
+
+<section class="section" id="patterns">
+
+<div class="section-heading">
+
+<div class="eyebrow">05 / MACHINE LEARNING LAB</div>
+
+<h2>Find groups. <span>Discover patterns.</span></h2>
+
+<p>
+Use unsupervised machine learning to discover
+similarities and unusual records.
+</p>
+
+</div>
+
+
+<div class="ml-banner">
+
+<div>
+<span>UNSUPERVISED LEARNING</span>
+<h3>Pattern Discovery Engine</h3>
+
+<p>
+K-Means identifies groups of similar records.
+Isolation Forest identifies unusual data points.
+</p>
+</div>
+
+<button id="runPatterns" class="primary-btn">
+Run Analysis ↗
+</button>
+
+</div>
+
+
+<div id="patternResults">
+
+<div class="empty-state">
+<div>⌘</div>
+<h3>Analysis not started</h3>
+<p>Click Run Analysis to discover patterns in the dataset.</p>
+</div>
+
+</div>
+
+
+<div class="method-note">
+<strong>Understand the algorithms:</strong>
+
+K-Means groups records that have similar numerical
+characteristics. Isolation Forest flags records
+that differ from the majority. These results do not
+identify criminals or predict future crimes.
+</div>
+
+</section>
+
+
+<!-- FINDINGS -->
+
+<section class="section dark-section" id="findings">
+
+<div class="section-heading">
+
+<div class="eyebrow">06 / INVESTIGATION NOTES</div>
+
+<h2>What does the data <span>tell us?</span></h2>
+
+<p>Automatically generated observations from the selected records.</p>
+
+</div>
+
+
+<div id="insightsList" class="insights-list">
+
+<p>Loading findings...</p>
+
+</div>
+
+
+<div class="disclaimer">
+<strong>IMPORTANT NOTE</strong>
+
+<p>
+This is an academic crime-data analysis project.
+Record counts are not population-adjusted crime rates.
+Statistical patterns do not prove causation or
+predict individual criminal behaviour.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ABOUT -->
+
+<section class="section" id="about">
+
+<div class="section-heading">
+
+<div class="eyebrow">07 / PROJECT FILE</div>
+
+<h2>Behind the <span>investigation.</span></h2>
+
+</div>
+
+
+<div class="about-grid">
+
+<div>
+
+<h3>Project Objective</h3>
+
+<p>
+Crime Pattern Hunter analyses historical Indian crime
+records to discover recurring patterns, compare crime
+categories, explore geographical distributions and
+understand time-based trends using machine learning.
+</p>
+
+
+<h3>Why this project?</h3>
+
+<p>
+Large datasets contain information that can be difficult
+to understand by examining individual records.
+Data analytics helps transform these records into
+meaningful visual insights.
+</p>
+
+</div>
+
+
+<div class="tech-panel">
+
+<span>TECHNOLOGY STACK</span>
+
+<p>Python & Pandas — Data processing</p>
+<p>Flask — Backend</p>
+<p>Scikit-learn — Machine learning</p>
+<p>JavaScript — Interactivity</p>
+<p>Chart.js — Data visualisation</p>
+<p>Leaflet — Interactive maps</p>
+
+</div>
+
+</div>
+
+
+<footer>
+
+<span>CRIME PATTERN HUNTER © 2026</span>
+
+<span>ANALYSE THE DATA. QUESTION THE PATTERN.</span>
+
+<a href="#home">BACK TO TOP ↑</a>
+
+</footer>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="{{ url_for('static', filename='app.js') }}?v=20261111"></script>
+
+</body>
+</html>
